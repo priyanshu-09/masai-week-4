@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<head>
+	<link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Acme|Anton|Ubuntu&display=swap" rel="stylesheet">
+	<style type="text/css">
+		*{
+			font-size: 25px;
+			font-weight:bold;
+			text-align: center;
+			font-family: 'Acme', sans-serif;
+		}
+		body{
+			border: 10px solid;
+			padding: 20px;
+		}
+		#heading{
+			min-height: : 70px;
+			font-size: 50px;
+			font-weight: bold;
+			text-shadow: hsl();
+			text-align: center;
+
+		}
+		#subheading{
+			min-height: : 70px;
+			font-size: 30px;
+			font-weight: bold;
+			text-shadow: hsl();
+			text-align: center;
+
+		}
+		.key{
+			
+			
+			margin-top: 10px;
+		}
+		.margin_bot{
+			font-size :25px;
+			margin-bottom: 40px; 
+		}
+		
+
+		
+		.zero{
+			height: 0px;
+			text-align: center;
+			font-size: 27px;
+
+		}
+		#char{
+			font-size: 20px;
+		}
+		#house{
+			margin-top: 26px;
+			
+
+		}
+
+	</style>
+</head>
+<body id="bodyelem">
+	<div class="margin_bot">
+		<img src="houses/Sortinghat.jpeg" style="height: 100px; width: 100px;" id="house"><br>
+		Place youre pointer on the Sorting Hat to get sorted into a House
+	</div>
+	<div id="heading"></div>
+	<div id="subheading"></div>
+	<br>
+	<div id="values">
+		
+	</div>
+	
+	<div id ="char" style="color: white;margin-top: 25px;">
+		Choose a member of this House to know more about him/her<br>
+	</div>
+	<div style="color:white;" id="info">
+		
+	</div>
+
+	
+
+
+	<script type="text/javascript">
+		var btn = document.getElementById('house')
+		btn.addEventListener('mouseover',function(){
+			getHouse(houseDetails)
+		});
+
+		function getHouse(displayFunction){
+			 var result = null;
+  			  var hyh = new XMLHttpRequest();
+  			  hyh.open('GET','https://www.potterapi.com/v1/sortingHat');
+  			  hyh.send();
+  			  hyh.onload =function(){
+  			  	var result = JSON.parse(hyh.response);
+  			  	houseDetails(result);
+  			  }
+		}
+		var  house = [];
+		function houseDetails(input){
+			var bodyelem = document.getElementById('bodyelem')
+			var btn = document.getElementById('house');
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', 'https://www.potterapi.com/v1/houses?key=$2a$10$SFhUKCyePkjkWh9ihII91O7nFQsb6Hg1wGhYOeJFiQ/P2vierkElO');
+			xhr.send();
+			xhr.onload = function(){
+				var hou = JSON.parse(xhr.response);
+				console.log(input)
+				for(var i=0; i<hou.length;i++){
+					console.log(i);
+					console.log(hou[i].name)
+					if(input==hou[i].name){
+						var char = document.getElementById('char');
+						var info = document.getElementById('info');
+
+						info.innerHTML=''
+						info.style.color=''
+						char.style.color='';
+						bodyelem.style.backgroundColor ='';
+						bodyelem.style.color = '';
+						btn.style.backgroundColor ='';
+						btn.style.color = '';
+						bodyelem.style.borderColor=''
+
+						if(input=='Gryffindor'){
+							bodyelem.style.backgroundColor= '#96001e';
+							bodyelem.style.color=hou[i].colors[1];
+							btn.style.backgroundColor= '#96001e';
+							btn.style.color=hou[i].colors[1];
+							
+							bodyelem.style.borderColor = hou[i].colors[1];
+
+						}
+						else if(input=='Ravenclaw'){
+							bodyelem.style.backgroundColor='#004e80';
+							bodyelem.style.color='#d6a104';
+							btn.style.backgroundColor='#004e80';
+							btn.style.color='#d6a104';
+						}
+						else{
+							bodyelem.style.backgroundColor=hou[i].colors[0];
+							bodyelem.style.color=hou[i].colors[1];
+							btn.style.backgroundColor=hou[i].colors[0];
+							btn.style.color = hou[i].colors[1]
+							
+
+							
+						}
+						var div2 = document.getElementById('values')
+						div2.innerHTML='The house with -  '+hou[i].values[0]+' , '+hou[i].values[1]+' , '+hou[i].values[2]+' and '+hou[i].values[3]+'.'
+						var div = document.getElementById('heading')
+						var div3 = document.getElementById('subheading')
+						div.innerHTML = 'Welcome to Hogwarts School of Witchcraft and Wizardary<br>'+'<img src="houses/Hogwarts.jpg" style="height:100px; width:"><br>';
+						div3.innerHTML ='Congratulations on getting sorted into the House of  '+ hou[i].founder+'<br>'+'<img src="houses/'+input+'Crest.png" style="height:100px; width:">';
+						
+						break;
+					}
+				}
+				house.push(input);
+				character()
+				return house
+
+
+			}
+		}
+		function character(input1){
+			input1 = house[house.length-1];
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET','https://www.potterapi.com/v1/characters?key=$2a$10$SFhUKCyePkjkWh9ihII91O7nFQsb6Hg1wGhYOeJFiQ/P2vierkElO');
+			xhr.send();
+			xhr.onload=function(){
+				var output =''
+				var result = JSON.parse(xhr.response);
+				var sel = document.createElement('select');
+				var char = document.getElementById('char');
+				char.innerHTML ='';
+
+				sel.setAttribute('id','char_selection');
+				var j=1
+				for (var i=0; i<result.length;i++){
+					if(result[i].house==input1){
+						
+						output+='<option >'+result[i].name+'</option>';
+						
+					}
+				}
+				sel.innerHTML = '<option ></option>'+output;
+				char.innerHTML='Choose a member of this House to know more about him/her<br>'+'<button onclick="submit()">Submit</button><br>'
+				char.appendChild(sel)
+				
+				
+				
+
+				
+			}
+		}
+		function submit(){
+			
+			var ch= document.getElementById('char_selection').value;
+			console.log(ch)
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET','https://www.potterapi.com/v1/characters?key=$2a$10$SFhUKCyePkjkWh9ihII91O7nFQsb6Hg1wGhYOeJFiQ/P2vierkElO');
+			xhr.send();
+			xhr.onload=function(){
+				var res = JSON.parse(xhr.response)
+				for (var i=0;i<res.length;i++){
+					
+					if(res[i].name==ch){
+						var mem='';
+						if(res[i].ministryOfMagic==true){
+							mem += 'Works in Ministry Of Magic,'
+						}
+						else if(res[i].orderOfThePhoenix==true){
+							mem += 'Works for The Order of Pheonix,'
+						}
+						else if(res[i].dumbledoresArmy==true){
+							mem += "Works for Dumbeldore's Army"
+						}
+						else if(res[i].deathEater==true){
+							mem += "Is a Death Eater"
+						}
+						else {
+							mem =''
+						}
+
+						var info = document.getElementById('info')
+						info.innerHTML='<ul><li> A '+res[i].role+'</li><li> Blood Status- '+res[i].bloodStatus+'</li><li>'+mem+'</li></ul>'
+					}
+				}
+			}
+
+		}
+	</script>
+
+</body>
